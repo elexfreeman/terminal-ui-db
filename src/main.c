@@ -1,48 +1,49 @@
+#ifndef _XOPEN_SOURCE_EXTENDED
+#define _XOPEN_SOURCE_EXTENDED 1
+#endif
 
+#include <locale.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
-char *input_field(char *label, int length) {
-  int x, y;
-  char *input_data;
-
-  if (length < 1) {
-    return NULL;
-  }
-
-  getmaxyx(stdscr, y, x);
-  input_data = (char *)malloc(length);
-
-  //  move(y - 1, 0); // move to begining of line
-  //  clrtoeol();     // clear line
-  //  refresh();
-  mvprintw(y - 1, 0, label);
-  refresh();
-  getnstr(input_data, length);
-
-  return input_data;
-}
+#include "./wigets/input_wiget.h"
 
 int main() {
-
-  char name[46];
-  char password[9];
-
-  int x, y;
-
   initscr();
 
-  getmaxyx(stdscr, y, x);
+  setlocale(LC_ALL, "ru_RU.UTF-8");
 
-  char *data = input_field("Input 5 numbers: ", 5);
+  mvaddwstr(5, 5, L"Английское слово: "); // задаем вопрос
 
-  mvprintw(y - 2, 0, data);
-  free(data);
-  //  refresh();
+  wchar_t *input_data;
+  wchar_t word[8];
 
-  getch(); /* wait here */
+  wchar_t *pm;
+
+  pm = calloc(123, sizeof *pm);
+  wcscpy(pm, L"bye");
+  move(0, 0);
+  printw("pm %ls", pm);
+  mvaddwstr(3, 4, pm); // задаем вопрос
+
+  //  input_data = (wchar_t *)malloc(20);
+
+  // mvinwstr(0, 0, input_data);
+  getn_wstr((wint_t *)word, 8);
+  mvaddwstr(6, 24, word); // задаем вопрос
+  printw("len %d", wcslen(word));
+  refresh();
+
+  wchar_t *dd = input_field(L"Введите данные 5 ", 5);
+  mvaddwstr(6, 24, dd); // задаем вопрос
+
+  free(pm);
+  free(dd);
+  getch();
   endwin();
+  return 0;
   return 0;
 }
