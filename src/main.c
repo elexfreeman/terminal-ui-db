@@ -2,6 +2,8 @@
 #define _XOPEN_SOURCE_EXTENDED 1
 #endif
 
+#include <signal.h>
+
 #include <locale.h>
 #include <ncurses.h>
 #include <stdio.h>
@@ -9,9 +11,34 @@
 #include <string.h>
 #include <wchar.h>
 
+#include "./config/config.h"
+
 #include "./wigets/input_wiget.h"
 
+
+void app_finish() {
+  struct stru_config *config = get_config();
+  free(config);
+  fprintf(stdout, "App exit...\n");
+  abort();
+}
+
+void sig_handler(int sig) {
+  printf("signal: %d \n", sig);
+  switch (sig) {
+  case SIGSEGV:
+    app_finish();
+  case SIGTERM:
+    app_finish();
+  default:
+    app_finish();
+  }
+}
+
 int main() {
+  if (signal(SIGINT, sig_handler) == SIG_ERR)
+    printf("\ncan't catch SIGINT\n");
+
   initscr();
 
   setlocale(LC_ALL, "ru_RU.UTF-8");
