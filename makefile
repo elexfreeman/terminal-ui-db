@@ -18,52 +18,51 @@ LINK_DIR=./build/link/
 BUILD_TESTS_DIR=./build/tests/
 
 
-DATA_STD=./src/libs/datastd/memory.h ./src/libs/datastd/memory.c \
-  ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
-
-SQLITE=./src/libs/sqlite3.h \
-  ./src/libs/sqlite3ext.h \
-  ./src/libs/sqlite3.c
-
-INIT_LIB=./src/libs/ini.h ./src/libs/ini.c
-
-CONFIG_LIB=./src/config/config.h \
-  ./src/config/config.c \
-  ./src/libs/ini.h \
-  ./src/libs/ini.c
-
-# =============================
-# SRC
-
-SOURCES=./src/main.c \
-  ./src/wigets/table_wiget.c \
-  ./src/wigets/input_wiget.c \
-  $(CONFIG_LIB) \
-  $(SQLITE) \
-  $(DATA_STD)
-
-SRC_TEST_MESSAGES=./src/tests/test_messages.c \
-  $(CONFIG_LIB) \
-
-# =============================
-# OBJECTS
-
-OBJECTS=$(SOURCES:.cpp=.o)
-	EXECUTABLE=terminal-ui-db
+EXECUTABLE=terminal-ui-db
 
 # $(info $(SOURCES:.c=.o))
 
 # =============================
+#
+MAIN_OBJECTS = $(OBJECTS) main.o
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(MAIN_OBJECTS)
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -o $(BUILD)$(EXECUTABLE) $(addprefix $(LINK_DIR),$(test_messages_obj)) $(LDFLAGS)
+	$(BUILD_DIR)$(EXECUTABLE)
+
+main.o : ./src/main.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/main.c -o $(LINK_DIR)$@
 
 
+
+sqlite3.o : ./src/libs/sqlite3.h ./src/libs/sqlite3ext.h ./src/libs/sqlite3.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/libs/sqlite3.c -o $(LINK_DIR)$@
 
 init.o : ./src/libs/ini.c ./src/libs/ini.h
+	$(info  )
+	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/libs/ini.c -o $(LINK_DIR)$@
 
 config.o : ./src/config/config.c ./src/config/config.h
+	$(info  )
+	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/config/config.c -o $(LINK_DIR)$@
+
+memory.o : ./src/libs/datastd/memory.h ./src/libs/datastd/memory.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/libs/datastd/memory.c -o $(LINK_DIR)$@
+
+slice.o : ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/libs/datastd/slice.c -o $(LINK_DIR)$@
 
 
 $(EXECUTABLE): $(OBJECTS) 
@@ -77,12 +76,16 @@ $(EXECUTABLE): $(OBJECTS)
 #
 
 test_messages.o : ./src/tests/test_messages.c
+	$(info  )
+	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/tests/test_messages.c -o $(LINK_DIR)$@
 
 
 test_messages_obj = test_messages.o init.o config.o
 
 test_messages: $(test_messages_obj)
+	$(info  )
+	$(info ======= $@ ========)
 	$(CC) -o $(BUILD_TESTS_DIR)$@ $(addprefix $(LINK_DIR),$(test_messages_obj)) $(LDFLAGS)
 	$(BUILD_TESTS_DIR)$@
 
