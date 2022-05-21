@@ -20,53 +20,55 @@ BUILD_TESTS_DIR=./build/tests/
 
 EXECUTABLE=terminal-ui-db
 
-OBJECTS = sqlite3.o \
+OBJ_LIST=sqlite3.o \
   memory.o slice.o  \
   init.o config.o \
   db.o \
   input_wiget.o
 
+OBJECTS = $(addprefix $(LINK_DIR),$(OBJ_LIST))
+
 
 # =============================
 #
-MAIN_OBJECTS = $(OBJECTS) main.o
+MAIN_OBJECTS = $(OBJECTS) $(LINK_DIR)main.o
 
 all: $(MAIN_OBJECTS)
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -o $(BUILD)$(EXECUTABLE) $(addprefix $(LINK_DIR),$(MAIN_OBJECTS)) $(LDFLAGS)
+	$(CC) -o $(BUILD)$(EXECUTABLE) $(MAIN_OBJECTS) $(LDFLAGS)
 
-main.o : ./src/main.c
+$(LINK_DIR)main.o : ./src/main.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/main.c -o $(LINK_DIR)$@ 
+	$(CC) -c $(LDFLAGS) ./src/main.c -o $@ 
 
-sqlite3.o : ./src/libs/sqlite3.h ./src/libs/sqlite3ext.h ./src/libs/sqlite3.c
+$(LINK_DIR)sqlite3.o : ./src/libs/sqlite3.h ./src/libs/sqlite3ext.h ./src/libs/sqlite3.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/libs/sqlite3.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/libs/sqlite3.c -o $@
 
-init.o : ./src/libs/ini.c ./src/libs/ini.h
+$(LINK_DIR)init.o : ./src/libs/ini.c ./src/libs/ini.h
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/libs/ini.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/libs/ini.c -o $@
 
-config.o : ./src/config/config.c ./src/config/config.h
+$(LINK_DIR)config.o : ./src/config/config.c ./src/config/config.h
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/config/config.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/config/config.c -o $@
 
-memory.o : ./src/libs/datastd/memory.h ./src/libs/datastd/memory.c
+$(LINK_DIR)memory.o : ./src/libs/datastd/memory.h ./src/libs/datastd/memory.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/libs/datastd/memory.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/libs/datastd/memory.c -o $@
 
-slice.o : ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
+$(LINK_DIR)slice.o : ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/libs/datastd/slice.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/libs/datastd/slice.c -o $@
 
-db.o : ./src/db/db.h ./src/db/db.c
+$(LINK_DIR)db.o : ./src/db/db.h ./src/db/db.c
 	$(info  )
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/db/db.c -o $(LINK_DIR)$@
@@ -75,19 +77,19 @@ db.o : ./src/db/db.h ./src/db/db.c
 #
 #
 
-input_wiget.o : ./src/wigets/input_wiget.h ./src/wigets/input_wiget.c
+$(LINK_DIR)input_wiget.o : ./src/wigets/input_wiget.h ./src/wigets/input_wiget.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/wigets/input_wiget.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/wigets/input_wiget.c -o $@
 
 
 # =============================
 #
 
-test_messages.o : ./src/tests/test_messages.c
+$(LINK_DIR)test_messages.o : ./src/tests/test_messages.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/tests/test_messages.c -o $(LINK_DIR)$@
+	$(CC) -c $(LDFLAGS) ./src/tests/test_messages.c -o $@
 
 
 test_messages_obj = test_messages.o init.o config.o
