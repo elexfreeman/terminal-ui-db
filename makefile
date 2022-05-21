@@ -20,7 +20,12 @@ BUILD_TESTS_DIR=./build/tests/
 
 EXECUTABLE=terminal-ui-db
 
-# $(info $(SOURCES:.c=.o))
+OBJECTS = sqlite3.o \
+  memory.o slice.o  \
+  init.o config.o \
+  db.o \
+  input_wiget.o
+
 
 # =============================
 #
@@ -29,15 +34,12 @@ MAIN_OBJECTS = $(OBJECTS) main.o
 all: $(MAIN_OBJECTS)
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -o $(BUILD)$(EXECUTABLE) $(addprefix $(LINK_DIR),$(test_messages_obj)) $(LDFLAGS)
-	$(BUILD_DIR)$(EXECUTABLE)
+	$(CC) -o $(BUILD)$(EXECUTABLE) $(addprefix $(LINK_DIR),$(MAIN_OBJECTS)) $(LDFLAGS)
 
 main.o : ./src/main.c
 	$(info  )
 	$(info ======= $@ ========)
-	$(CC) -c $(LDFLAGS) ./src/main.c -o $(LINK_DIR)$@
-
-
+	$(CC) -c $(LDFLAGS) ./src/main.c -o $(LINK_DIR)$@ 
 
 sqlite3.o : ./src/libs/sqlite3.h ./src/libs/sqlite3ext.h ./src/libs/sqlite3.c
 	$(info  )
@@ -64,12 +66,19 @@ slice.o : ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/libs/datastd/slice.c -o $(LINK_DIR)$@
 
+db.o : ./src/db/db.h ./src/db/db.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/db/db.c -o $(LINK_DIR)$@
 
-$(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $(BUILD_DIR)$@
+# =============================
+#
+#
 
-.cpp.o:
-	$(CC) -c $(CFLAGS) $< -o $(LINK_DIR)$@
+input_wiget.o : ./src/wigets/input_wiget.h ./src/wigets/input_wiget.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/wigets/input_wiget.c -o $(LINK_DIR)$@
 
 
 # =============================
