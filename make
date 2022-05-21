@@ -12,11 +12,10 @@ LDFLAGS= -lncursesw \
   -lpthread -ldl -lm
 
 
-BUILD_DIR=./build/
+BUILD_DIR=./build/out/
 LINK_DIR=./build/link/
 
-BUILD_TESTS_DIR=./build/tests/
-
+BUILD_TESTS_DIR=./build/tests/ 
 
 DATA_STD=./src/libs/datastd/memory.h ./src/libs/datastd/memory.c \
   ./src/libs/datastd/slice.h ./src/libs/datastd/slice.c
@@ -84,8 +83,7 @@ test_messages_obj = test_messages.o init.o config.o
 
 test_messages: $(test_messages_obj)
 	$(CC) -o $(BUILD_TESTS_DIR)$@ $(addprefix $(LINK_DIR),$(test_messages_obj)) $(LDFLAGS)
-	$(BUILD_TESTS_DIR)$@
 
 
 clean:
-	rm -rf $(LINK_DIR)*.o
+	rm -rf $(LINK_DIR)*.o $(BUILD_DIR)* $(BUILD_TESTS_DIR)*
