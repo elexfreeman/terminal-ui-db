@@ -6,16 +6,16 @@
 
 #include "../libs/datastd/slice.h"
 
-struct message {
+struct message_item {
   int id;
   wchar_t *msg;
   time_t create_date;
 };
 
-struct message *message_get(int id);
-void message_add(struct message *msg);
+struct message_item *message_get(int id);
+int message_add(struct message_item *msg);
 Slice *message_list(int offset, int limit);
 
-void message_init();
+int message_init();
 
 #endif

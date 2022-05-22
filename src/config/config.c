@@ -33,7 +33,7 @@ int init_config() {
   config->address = "0.0.0.0";
   config->db_file = "data.db";
 
-  if (ini_parse("CcCvStore.ini", handler, &config) < 0) {
+  if (ini_parse("config.ini", handler, &config) < 0) {
     fprintf(stderr, "init_config done \r\n");
     return 0;
   }
