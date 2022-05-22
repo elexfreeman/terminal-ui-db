@@ -41,4 +41,5 @@ int db_init(struct stru_config *config) {
 
 sqlite3 *db_get() { return db; }
 
+void db_close() { sqlite3_close(db_get()); }
 #endif

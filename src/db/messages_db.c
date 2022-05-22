@@ -6,19 +6,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "../config/config.h"
 #include "../libs/datastd/slice.h"
 #include "./db.h"
 #include "./messages_db.h"
 
-struct message_item *message_get(int id) {
-  struct message_item *out = NULL;
+t_message_item *message_get(int id) {
+  t_message_item *out = NULL;
 
   return out;
 }
 
-int message_add(struct message_item *msg) {
+int message_add(t_message_item *msg) {
   int rc = 0;
   int ret = 0;
 
@@ -46,7 +47,8 @@ int message_add(struct message_item *msg) {
 
   free(p_dst);
 
-  sqlite3_bind_int(p_stmt, 2, msg->create_date);
+  time_t t = time(NULL);
+  sqlite3_bind_int(p_stmt, 2, t);
 
   ret = sqlite3_step(p_stmt);
   sqlite3_finalize(p_stmt);
@@ -67,57 +69,74 @@ Slice *message_list(int offset, int limit) {
     return 0;
   }
 
+  const unsigned char *blob = NULL;
   void *val = NULL;
-  sqlite3_stmt *stmt;
+  sqlite3_stmt *p_stmt;
 
   char *err_msg = 0;
   int row = 0;
   const unsigned char *text;
 
-  char *sql = "SELECT id, msg, create_date FROM messages";
+  char *sql = "SELECT id, msg, create_date FROM messages LIMIT ?, ?";
 
-  sqlite3_prepare_v2(db_get(), sql, -1, &stmt, NULL);
+  sqlite3_prepare_v2(db_get(), sql, -1, &p_stmt, NULL);
 
   fprintf(stdout, "Got results:\n");
-  while (sqlite3_step(stmt) != SQLITE_DONE) {
-    int i;
-    int num_cols = sqlite3_column_count(stmt);
 
-    const unsigned char *blob;
+  sqlite3_bind_int(p_stmt, 1, offset);
+  sqlite3_bind_int(p_stmt, 2, limit);
 
-    for (i = 0; i < num_cols; i++) {
-      switch (sqlite3_column_type(stmt, i)) {
+  while (sqlite3_step(p_stmt) != SQLITE_DONE) {
+    int num_cols = sqlite3_column_count(p_stmt);
 
-      case (SQLITE3_TEXT):
-        blob = sqlite3_column_text(stmt, i);
+    t_message_item *item = malloc(sizeof(t_message_item *));
 
-        fprintf(stdout, "== %s ==\r\n", (char *)blob);
+    // id
+    item->id = sqlite3_column_int(p_stmt, 0);
 
-        size_t blob_bytes = sqlite3_column_bytes(stmt, i);
+    // msg
+    blob = sqlite3_column_text(p_stmt, 1);
+    size_t blob_bytes = sqlite3_column_bytes(p_stmt, 1);
+    item->msg = (wchar_t *)malloc(blob_bytes);
+    mbstowcs(item->msg, (char *)blob, blob_bytes);
 
-        wchar_t *wstr = (wchar_t *)malloc(blob_bytes);
-        mbstowcs(wstr, (char *)blob, blob_bytes);
+    // id
+    item->create_date = sqlite3_column_int(p_stmt, 2);
 
-        fprintf(stdout, "len %d \r\n ", (int)blob_bytes);
-        fprintf(stdout, "data %ls \r\n ", wstr);
-        free(wstr);
-        // memcpy(input_data, blob, blob_bytes);
-        break;
+    Slice_Append(out, item);
 
-      case (SQLITE_INTEGER):
-        printf("%d, ", sqlite3_column_int(stmt, i));
-        break;
-      case (SQLITE_FLOAT):
-        printf("%g, ", sqlite3_column_double(stmt, i));
-        break;
-      default:
-        break;
-      }
-    }
-    printf("\n");
+    //    for (i = 0; i < num_cols; i++) {
+    //      switch (sqlite3_column_type(stmt, i)) {
+    //
+    //      case (SQLITE3_TEXT):
+    //        blob = sqlite3_column_text(stmt, i);
+    //
+    //        fprintf(stdout, "== %s ==\r\n", (char *)blob);
+    //
+    //        size_t blob_bytes = sqlite3_column_bytes(stmt, i);
+    //
+    //        wchar_t *wstr = (wchar_t *)malloc(blob_bytes);
+    //        mbstowcs(wstr, (char *)blob, blob_bytes);
+    //
+    //        fprintf(stdout, "len %d \r\n ", (int)blob_bytes);
+    //        fprintf(stdout, "data %ls \r\n ", wstr);
+    //        free(wstr);
+    //        // memcpy(input_data, blob, blob_bytes);
+    //        break;
+    //
+    //      case (SQLITE_INTEGER):
+    //        printf("%d, ", sqlite3_column_int(stmt, i));
+    //        break;
+    //      case (SQLITE_FLOAT):
+    //        printf("%g, ", sqlite3_column_double(stmt, i));
+    //        break;
+    //      default:
+    //        break;
+    //      }
+    //    }
   }
 
-  sqlite3_finalize(stmt);
+  sqlite3_finalize(p_stmt);
   return out;
 }
 
@@ -151,5 +170,26 @@ int message_init() {
   return 1;
 }
 
-void db_close() { sqlite3_close(db_get()); }
+void message_free(t_message_item *item) {
+  if (item) {
+    if (item->msg)
+      free(item->msg);
+    free(item);
+  }
+}
+
+void message_free_slice(Slice *slice) {
+  if (!slice)
+    return;
+  // TODO: check mem leak
+
+  //  Slice_FreeAllElements(slice);
+  t_message_item *item;
+  for (int i = 0; i < Slice_Size(slice); i++) {
+    item = Slice_Get(slice, i);
+    message_free(item);
+  }
+  Slice_Free(slice);
+}
+
 #endif

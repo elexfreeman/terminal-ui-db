@@ -19,24 +19,6 @@
 int main() {
 
   setlocale(LC_ALL, "en_US.utf8");
-  const char *mbstr = u8"z\u00df\u6c34\U0001F34C"; // or u8"zß水🍌"
-  wchar_t wstr[5];
-  mbstowcs(wstr, mbstr, 5);
-  // wprintf(L"MB string: %s\n", mbstr);
-  // wprintf(L"Wide string: %ls\n", wstr);
-
-  // 4 wide characters
-  const wchar_t src[] = L"Привет мрррр";
-  // they occupy 10 bytes in UTF-8
-  size_t len_p_dst = wcslen(src) * sizeof(wchar_t);
-  char *p_dst = (char *)malloc(len_p_dst);
-  //  char dst[wcslen(src) * sizeof(wchar_t)];
-
-  printf("wide-character string: '%ls'\n", src);
-
-  int rtn_val = wcstombs(p_dst, src, len_p_dst);
-  if (rtn_val > 0)
-    printf("multibyte string:  '%s'\n", p_dst);
 
   //================
   init_config();
@@ -65,7 +47,14 @@ int main() {
   free(msg->msg);
   free(msg);
 
-  message_list(0, 0);
+  Slice *list = message_list(2, 6);
+
+  for (int i = 0; i < Slice_Size(list); i++) {
+    struct message_item *item = Slice_Get(list, i);
+    fprintf(stdout, "%d msg = %ls \r\n", item->id, item->msg);
+  }
+
+  message_free_slice(list);
 
   db_close();
   fprintf(stdout, "TEST MSMS");

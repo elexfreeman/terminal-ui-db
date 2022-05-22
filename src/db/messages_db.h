@@ -12,10 +12,16 @@ struct message_item {
   time_t create_date;
 };
 
-struct message_item *message_get(int id);
-int message_add(struct message_item *msg);
+typedef struct message_item t_message_item;
+
+t_message_item *message_get(int id);
+int message_add(t_message_item *msg);
 Slice *message_list(int offset, int limit);
 
 int message_init();
+
+void message_free(t_message_item *item);
+
+void message_free_slice(Slice *slice);
 
 #endif
