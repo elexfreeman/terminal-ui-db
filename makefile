@@ -38,6 +38,7 @@ all: $(MAIN_OBJECTS) @(BUILD_DIR)config.ini
 	$(info  )
 	$(info ======= $@ ========)
 	$(CC) -o $(BUILD_DIR)$(EXECUTABLE) $(MAIN_OBJECTS) $(LDFLAGS)
+	$(BUILD_DIR)$(EXECUTABLE)
 
 run:
 	$(BUILD_DIR)$(EXECUTABLE)

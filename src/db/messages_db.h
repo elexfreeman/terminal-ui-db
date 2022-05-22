@@ -16,4 +16,6 @@ struct message *message_get(int id);
 void message_add(struct message *msg);
 Slice *message_list(int offset, int limit);
 
+void message_init();
+
 #endif
