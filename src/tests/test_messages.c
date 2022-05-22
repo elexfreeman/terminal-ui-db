@@ -22,7 +22,7 @@ int main() {
 
   //================
   init_config();
-  struct stru_config *config = get_config();
+  t_config *config = get_config();
   if (config == NULL) {
     fprintf(stdout, "Empty config r\n");
     return 1;

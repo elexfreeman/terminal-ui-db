@@ -15,9 +15,8 @@
 
 #include "./wigets/input_wiget.h"
 
-
 void app_finish() {
-  struct stru_config *config = get_config();
+  t_config *config = get_config();
   free(config);
   fprintf(stdout, "App exit...\n");
   abort();
@@ -39,9 +38,20 @@ int main() {
   if (signal(SIGINT, sig_handler) == SIG_ERR)
     printf("\ncan't catch SIGINT\n");
 
+  //================
+  //  CONFIG
+  //================
+  init_config();
+  t_config *config = get_config();
+  if (config == NULL) {
+    fprintf(stdout, "Empty config r\n");
+    return 1;
+  }
+
   initscr();
 
-  setlocale(LC_ALL, "ru_RU.UTF-8");
+  setlocale(LC_ALL, "en_US.utf8");
+  // setlocale(LC_ALL, "ru_RU.UTF-8");
 
   mvaddwstr(5, 5, L"Английское слово: "); // задаем вопрос
 

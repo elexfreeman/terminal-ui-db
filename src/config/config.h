@@ -1,7 +1,6 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-
 #define SERVER_DEFAULT_PORT_NUM 8888
 #define MAX_KEY_SIZE 128
 #define MAX_VALUE_SIZE 2048
@@ -17,10 +16,10 @@ struct stru_config {
   char *db_file; /* Database filename (UTF-8) */
 };
 
+typedef struct stru_config t_config;
 
-struct stru_config *get_config();
+t_config *get_config();
 
 int init_config();
-
 
 #endif

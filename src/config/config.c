@@ -4,12 +4,12 @@
 #include <stdlib.h> //strlen
 #include <string.h>
 
-static struct stru_config *config;
+static t_config *config;
 static int is_config_init = 0;
 
 static int handler(void *data, const char *section, const char *name,
                    const char *value) {
-  struct stru_config *pconfig = (struct stru_config *)data;
+  t_config *pconfig = (t_config *)data;
 
   if (MATCH_CONF_VARS("server", "host")) {
     config->address = strdup(value);
@@ -28,7 +28,7 @@ int init_config() {
   if (is_config_init == 1) {
     return 1;
   }
-  config = (struct stru_config *)malloc(sizeof(struct stru_config));
+  config = (t_config *)malloc(sizeof(t_config));
   config->port = SERVER_DEFAULT_PORT_NUM;
   config->address = "0.0.0.0";
   config->db_file = "data.db";
@@ -42,7 +42,7 @@ int init_config() {
   return 1;
 }
 
-struct stru_config *get_config() {
+t_config *get_config() {
   if (is_config_init == 0) {
     return NULL;
   }

@@ -14,7 +14,7 @@ static sqlite3 *db = NULL;
 
 int db_is_ok() { return is_ok; }
 
-int db_init(struct stru_config *config) {
+int db_init(t_config *config) {
 
   char *err_msg = 0;
   sqlite3_stmt *statement;
