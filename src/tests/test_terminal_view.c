@@ -16,12 +16,75 @@
 
 #include "../sys/terminal/terminal_sys.h"
 
-struct test_str {
-  wchar_t *data;
-  int len;
-};
+Slice *main_menu();
+Slice *list_screen();
 
-typedef struct test_str t_test_str;
+Slice *list_screen() {
+
+  Slice *cmd_list = Slice_Create();
+  Slice *screen_list = Slice_Create();
+
+  t_menu *menu_main = malloc(sizeof(t_menu *));
+  t_menu *menu_list = malloc(sizeof(t_menu *));
+
+  menu_main->label = L"(1) Главное меню";
+  menu_main->command = malloc(sizeof(wchar_t *) * 3);
+  wcscpy(menu_main->command, L"1\r\n");
+  menu_main->cmd = main_menu_fnc;
+  Slice_Append(cmd_list, menu_main);
+
+  menu_list->label = L"(2) Добавить запись";
+  menu_list->command = malloc(sizeof(wchar_t *) * 3);
+  wcscpy(menu_list->command, L"2\r\n");
+  Slice_Append(cmd_list, menu_list);
+
+  Slice_Append(screen_list, terminal_create_str(L"\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"Запиь 1\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"Запиь 2\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"Запиь 3\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"Запиь 4\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"Запиь 5\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"\r\n"));
+
+  terminal_show_view(screen_list);
+  terminal_free_data(screen_list);
+
+  terminal_show_menu(cmd_list);
+
+  return cmd_list;
+}
+
+Slice *main_menu() {
+
+  Slice *cmd_list = Slice_Create();
+  Slice *screen_list = Slice_Create();
+
+  t_menu *menu_add = malloc(sizeof(t_menu *));
+  t_menu *menu_list = malloc(sizeof(t_menu *));
+
+  menu_add->label = L"(1) Добавить запись";
+  menu_add->command = (wchar_t *)malloc(sizeof(wchar_t *) * 3);
+  menu_add->cmd = add_fnc;
+  wcscpy(menu_add->command, L"1\r\n");
+  Slice_Append(cmd_list, menu_add);
+
+  menu_list->label = L"(2) Список записей";
+  menu_list->command = (wchar_t *)malloc(sizeof(wchar_t *) * 3);
+  menu_list->cmd = list_fnc;
+  wcscpy(menu_list->command, L"2\r\n");
+  Slice_Append(cmd_list, menu_list);
+
+  Slice_Append(screen_list, terminal_create_str(L"\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"======================\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"==== ГЛАВНОЕ МЕНЮ ====\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"======================\r\n"));
+  Slice_Append(screen_list, terminal_create_str(L"\r\n"));
+
+  terminal_show_view(screen_list);
+  terminal_free_data(screen_list);
+
+  return cmd_list;
+};
 
 void do_resize(int dummy) {
   mvaddwstr(0, 0, L"====resize: ======"); // задаем вопрос
@@ -73,11 +136,8 @@ int main() {
 
   while ((read = getline(&line, &len, fp)) != -1) {
     size_t len_p_dst = len * sizeof(wchar_t);
-
-    t_test_str *data = malloc(sizeof(t_test_str));
-    data->len = len;
-    data->data = malloc(len_p_dst);
-    mbstowcs(data->data, line, len_p_dst);
+    wchar_t *data = malloc(len_p_dst);
+    mbstowcs(data, line, len_p_dst);
     Slice_Append(view, data);
     i++;
   }
@@ -86,12 +146,36 @@ int main() {
   if (line)
     free(line);
 
-  terminal_show_view(view);
+  char *input_command = (char *)malloc(sizeof(char *) * 1000);
 
+  Slice *menu = main_menu();
+  while (true) {
+    terminal_show_menu(menu);
+    printf("Введите команду: ");
+    fgets(input_command, sizeof(input_command), stdin); // read string
 
-  refresh();
+    switch (atoi(input_command)) {
+    case list_fnc:
+      list_screen();
+      break;
+    case add_fnc:
+      printf("Добавить: ");
+      break;
 
-  getch();
-  endwin();
+    default:
+      main_menu();
+    }
+  }
+
+  free(input_command);
+  //  initscr();
+  //
+  //  setlocale(LC_ALL, "en_US.utf8");
+  //  wchar_t *input_data;
+  //  input_data = calloc(5, sizeof *input_data);
+  //
+  //  getn_wstr((wint_t *)input_data, 5);
+  //  getch();
+  //  endwin();
   return 0;
 }
