@@ -26,6 +26,9 @@ OBJECTS=sqlite3.o \
   ini.o config.o \
   db.o \
   messages_db.o \
+  messages_mod.o \
+  router_sys.o \
+  terminal_sys.o \
   input_wiget.o
 
 # =============================
@@ -103,19 +106,33 @@ input_wiget.o : ./src/wigets/input_wiget.h ./src/wigets/input_wiget.c
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/wigets/input_wiget.c
 
+messages_mod.o : ./src/modules/messages/messages_mod.h ./src/modules/messages/messages_mod.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/modules/messages/messages_mod.c
+
+router_sys.o  : ./src/sys/router/router_sys.h ./src/sys/router/router_sys.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/sys/router/router_sys.c
+
+terminal_sys.o  : ./src/sys/terminal/terminal_sys.h ./src/sys/terminal/terminal_sys.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/sys/terminal/terminal_sys.c
 
 # =============================
 # TESTS
 # =============================
 
+@(BUILD_TESTS_DIR)config.ini: config.ini
+	$(info ======= $@ ========)
+	cat config.ini > ./build/tests/config.ini
+
 test_messages.o : ./src/tests/test_messages.c
 	$(info  )
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/tests/test_messages.c
-
-@(BUILD_TESTS_DIR)config.ini: config.ini
-	$(info ======= $@ ========)
-	cat config.ini > ./build/tests/config.ini
 
 test_messages_obj = $(OBJECTS) test_messages.o
 
@@ -125,6 +142,21 @@ test_messages: $(test_messages_obj) @(BUILD_TESTS_DIR)config.ini
 	$(CC) -o $(BUILD_TESTS_DIR)$@ $(test_messages_obj) $(LDFLAGS)
 	$(BUILD_TESTS_DIR)$@
 
+#=============================
+
+test_terminal_view.o : ./src/tests/test_terminal_view.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/tests/test_terminal_view.c
+
+test_terminal_view_obj = $(OBJECTS) test_terminal_view.o
+
+test_terminal_view: $(test_terminal_view_obj) @(BUILD_TESTS_DIR)config.ini
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -o $(BUILD_TESTS_DIR)$@ $(test_terminal_view_obj) $(LDFLAGS)
+	$(BUILD_TESTS_DIR)$@
 
 clean:
 	rm -rf *.o
+
