@@ -6,9 +6,8 @@
 #include <sys/wait.h>  /* for wait */
 #include <unistd.h>
 
-void messages_print_list() {
-
-  Slice *list = message_list(0, 10);
+void messages_print_list(int offset, int limit) {
+  Slice *list = message_list(offset, limit);
 
   fprintf(stdout, "\r\n");
   for (int i = 0; i < Slice_Size(list); i++) {
@@ -17,8 +16,8 @@ void messages_print_list() {
     fprintf(stdout, "ID: %d\r\n", item->id);
     fprintf(stdout, "%ls", item->msg);
   }
-  fprintf(stdout, "#############################################\r\n");
 
+  fprintf(stdout, "\r\n");
   fprintf(stdout, "\r\n");
   message_free_slice(list);
 }
