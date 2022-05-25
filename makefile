@@ -27,6 +27,8 @@ OBJECTS=sqlite3.o \
   db.o \
   messages_db.o \
   messages_mod.o \
+  list_scr.o \
+  main_menu_scr.o \
   router_sys.o \
   terminal_sys.o \
   input_wiget.o
@@ -111,6 +113,18 @@ messages_mod.o : ./src/modules/messages/messages_mod.h ./src/modules/messages/me
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/modules/messages/messages_mod.c
 
+
+main_menu_scr.o : ./src/modules/screens/main_menu_scr.h ./src/modules/screens/main_menu_scr.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/modules/screens/main_menu_scr.c 
+
+list_scr.o : ./src/modules/screens/list_scr.h ./src/modules/screens/list_scr.c 
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/modules/screens/list_scr.c
+
+
 router_sys.o  : ./src/sys/router/router_sys.h ./src/sys/router/router_sys.c
 	$(info  )
 	$(info ======= $@ ========)
@@ -120,6 +134,7 @@ terminal_sys.o  : ./src/sys/terminal/terminal_sys.h ./src/sys/terminal/terminal_
 	$(info  )
 	$(info ======= $@ ========)
 	$(CC) -c $(LDFLAGS) ./src/sys/terminal/terminal_sys.c
+
 
 # =============================
 # TESTS
