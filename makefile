@@ -172,6 +172,21 @@ test_terminal_view: $(test_terminal_view_obj) @(BUILD_TESTS_DIR)config.ini
 	$(CC) -o $(BUILD_TESTS_DIR)$@ $(test_terminal_view_obj) $(LDFLAGS)
 	$(BUILD_TESTS_DIR)$@
 
+#=============================
+
+test_input_msg.o : ./src/tests/test_input_msg.c
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -c $(LDFLAGS) ./src/tests/test_input_msg.c
+
+test_input_msg_obj = $(OBJECTS) test_input_msg.o
+
+test_input_msg: $(test_input_msg_obj) @(BUILD_TESTS_DIR)config.ini
+	$(info  )
+	$(info ======= $@ ========)
+	$(CC) -o $(BUILD_TESTS_DIR)$@ $(test_input_msg_obj) $(LDFLAGS)
+	$(BUILD_TESTS_DIR)$@
+
 clean:
 	rm -rf *.o
 

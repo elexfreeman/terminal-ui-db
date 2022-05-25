@@ -19,7 +19,7 @@ t_message_item *message_get(int id) {
   return out;
 }
 
-int message_add(t_message_item *msg) {
+int message_add(char *msg) {
   int rc = 0;
   int ret = 0;
 
@@ -39,13 +39,11 @@ int message_add(t_message_item *msg) {
     return 0;
   }
 
-  size_t len_p_dst = wcslen(msg->msg) * sizeof(wchar_t);
-  char *p_dst = (char *)malloc(len_p_dst);
-  wcstombs(p_dst, msg->msg, len_p_dst);
+  size_t len_p_dst = strlen(msg) * sizeof(char *);
 
-  sqlite3_bind_text(p_stmt, 1, p_dst, len_p_dst, SQLITE_TRANSIENT);
+  fprintf(stdout, "%d \r\n", (int)len_p_dst);
 
-  free(p_dst);
+  sqlite3_bind_text(p_stmt, 1, msg, len_p_dst, SQLITE_TRANSIENT);
 
   time_t t = time(NULL);
   sqlite3_bind_int(p_stmt, 2, t);
@@ -77,11 +75,11 @@ Slice *message_list(int offset, int limit) {
   int row = 0;
   const unsigned char *text;
 
-  char *sql = "SELECT id, msg, create_date FROM messages LIMIT ?, ?";
+  char *sql = "SELECT * FROM ("
+              "SELECT id, msg, create_date FROM messages ORDER BY id DESC "
+              "LIMIT ?, ?) a ORDER BY id ASC;";
 
   sqlite3_prepare_v2(db_get(), sql, -1, &p_stmt, NULL);
-
-  fprintf(stdout, "Got results:\n");
 
   sqlite3_bind_int(p_stmt, 1, offset);
   sqlite3_bind_int(p_stmt, 2, limit);

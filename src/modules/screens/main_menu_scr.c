@@ -21,7 +21,7 @@ void main_menu_scr() {
 
     switch (atoi(input_command)) {
     case 1:
-      printf("Добавить запись: ");
+      messages_input();
       break;
     case 2:
       list_scr();

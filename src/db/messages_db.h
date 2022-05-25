@@ -15,7 +15,7 @@ struct message_item {
 typedef struct message_item t_message_item;
 
 t_message_item *message_get(int id);
-int message_add(t_message_item *msg);
+int message_add(char *msg);
 Slice *message_list(int offset, int limit);
 
 int message_init();

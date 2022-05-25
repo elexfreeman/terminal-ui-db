@@ -4,15 +4,15 @@
 #include "list_scr.h"
 
 static void print_list() {
-  fprintf(stdout, "%ls", L"\r\n");
-  fprintf(stdout, "%ls", L"Запиь 1\r\n");
-  fprintf(stdout, "%ls", L"Запиь 2\r\n");
-  fprintf(stdout, "%ls", L"Запиь 3\r\n");
-  fprintf(stdout, "%ls", L"Запиь 4\r\n");
-  fprintf(stdout, "%ls", L"Запиь 5\r\n");
-  fprintf(stdout, "%ls", L"\r\n");
 
-  fprintf(stdout, "%ls", L"(1) Главное меню, (2) Добавить запись\r\n");
+  Slice *list = message_list(0, 10);
+
+  for (int i = 0; i < Slice_Size(list); i++) {
+    struct message_item *item = Slice_Get(list, i);
+    fprintf(stdout, "%d msg = %ls \r\n", item->id, item->msg);
+  }
+
+  message_free_slice(list);
 }
 
 void list_scr() {
@@ -21,7 +21,8 @@ void list_scr() {
 
   int is_exit = 0;
   while (!is_exit) {
-    print_list();
+    messages_print_list();
+    fprintf(stdout, "%ls", L"(1) Главное меню, (2) Добавить запись\r\n");
     printf("Список:>");
     fgets(input_command, sizeof(input_command), stdin); // read string
 
@@ -30,7 +31,7 @@ void list_scr() {
       is_exit = 1;
       break;
     case 2:
-      printf("Добавить запись: ");
+      messages_input();
       break;
 
     default:

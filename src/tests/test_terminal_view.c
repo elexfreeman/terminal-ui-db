@@ -12,6 +12,8 @@
 #include <wchar.h>
 
 #include "../config/config.h"
+#include "../db/db.h"
+#include "../db/messages_db.h"
 #include "../libs/datastd/slice.h"
 
 #include "../sys/terminal/terminal_sys.h"
@@ -33,6 +35,10 @@ int main() {
     fprintf(stdout, "Empty config r\n");
     return 1;
   }
+
+  db_init(config);
+
+  message_init();
 
   setlocale(LC_ALL, "en_US.utf8");
   char line11[50] = "Heeloo Привет всем ";
